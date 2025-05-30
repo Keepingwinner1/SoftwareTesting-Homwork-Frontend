@@ -29,6 +29,13 @@
         </template>
         <charge></charge>
       </el-tab-pane>
+      <el-tab-pane>
+        <template slot="label">
+          <i class="el-icon-s-finance"></i>
+          销售佣金计算系统
+        </template>
+        <sales-commission></sales-commission>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -38,9 +45,10 @@ import triangle from './components/triangle.vue'
 import computerSale from './components/computerSale.vue'
 import calendar from './components/calendar.vue'
 import charge from './components/charge.vue'
+import salesCommission from './components/SalesCommission.vue'
 export default {
   name: 'App',
-  components: {triangle, computerSale, calendar, charge}
+  components: { triangle, computerSale, calendar, charge, salesCommission }
 }
 </script>
 
