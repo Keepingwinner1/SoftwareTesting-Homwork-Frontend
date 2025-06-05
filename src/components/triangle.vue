@@ -5,18 +5,6 @@
   <p class="question">对应问题9：判断三角形类型（等价类方法分别分析和设计测试用例）</p>
   <el-divider></el-divider>
   <h2>边界值法</h2>
-    <div class="range-setting">
-      <el-form :inline="true" :model="range2" class="demo-form-inline">
-        <el-form-item label="边长范围">
-          <el-input-number v-model="range2.min" :min="1" :max="range2.max" placeholder="最小值"></el-input-number>
-          <span class="range-separator">至</span>
-          <el-input-number v-model="range2.max" :min="range2.min" placeholder="最大值"></el-input-number>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="applyRange2">应用范围</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
     <div class="manual-input">
       <el-form :inline="true" :model="form2" class="demo-form-inline">
         <el-form-item label="属性">
@@ -87,6 +75,14 @@
     <div>
       <el-button type="primary" @click="testAll2" style="margin-left: 10px">测试所有用例</el-button>
       <el-button type="danger" @click="clearAll2" style="margin-left: 10px">清空测试用例</el-button>
+      <div v-if="tableData2.length > 0" style="margin-top: 10px">
+        <el-alert
+          :title="`测试通过率: ${successRate2}%`"
+          :type="successRate2 === 100 ? 'success' : successRate2 >= 80 ? 'warning' : 'error'"
+          :closable="false"
+          show-icon>
+        </el-alert>
+      </div>
     </div>
     <template>
       <el-table
@@ -132,23 +128,15 @@
           prop="result"
           label="是否通过"
           width="180">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+            <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </template>
   <el-divider></el-divider>
   <h2>等价类法</h2>
-  <div class="range-setting">
-    <el-form :inline="true" :model="range" class="demo-form-inline">
-      <el-form-item label="边长范围">
-        <el-input-number v-model="range.min" :min="1" :max="range.max" placeholder="最小值"></el-input-number>
-        <span class="range-separator">至</span>
-        <el-input-number v-model="range.max" :min="range.min" placeholder="最大值"></el-input-number>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="applyRange">应用范围</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
   <div class="manual-input">
     <el-form :inline="true" :model="form" class="demo-form-inline">
       <el-form-item label="等价类类别">
@@ -205,6 +193,14 @@
   <div>
     <el-button type="primary" @click="testAll" style="margin-left: 10px">测试所有用例</el-button>
     <el-button type="danger" @click="clearAll" style="margin-left: 10px">清空测试用例</el-button>
+    <div v-if="tableData.length > 0" style="margin-top: 10px">
+      <el-alert
+        :title="`测试通过率: ${successRate}%`"
+        :type="successRate === 100 ? 'success' : successRate >= 80 ? 'warning' : 'error'"
+        :closable="false"
+        show-icon>
+      </el-alert>
+    </div>
   </div>
   <template>
     <el-table
@@ -250,6 +246,10 @@
         prop="result"
         label="是否通过"
         width="180">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+          <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+        </template>
       </el-table-column>
     </el-table>
   </template>
@@ -257,6 +257,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'triangle',
   data () {
@@ -265,6 +267,8 @@ export default {
       tableData2: [],
       fileList: [],
       fileList2: [],
+      successRate: 0,
+      successRate2: 0,
       form: {
         a: '',
         b: '',
@@ -279,354 +283,217 @@ export default {
         c: '',
         expect: '',
         equivalenceClass: ''
-      },
-      range: {
-        min: 1,
-        max: 100
-      },
-      range2: {
-        min: 1,
-        max: 100
       }
     }
   },
-  methods:
-    {
-      handleRemove (file, fileList) {
-        console.log(file, fileList)
-        // 清空对应的测试用例列表
-        this.tableData = []
-        this.fileList = []
-      },
-      handlePreview (file) {
-        console.log(file)
-      },
-      handleExceed (files, fileList) {
-        this.$message.warning(`当前限制选择 100 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-      },
-      // eslint-disable-next-line no-unused-vars
-      beforeRemove (file, fileList) {
-        return this.$confirm(`确定移除 ${file.name}？`)
-      },
-
-      // eslint-disable-next-line no-unused-vars
-      Success (response, file) {
-        if (file.name.endsWith('.csv')) {
-          // 处理CSV文件
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const text = e.target.result
-            const lines = text.split('\n')
-            const newCases = lines
-              .filter(line => line.trim()) // 过滤空行
-              .map((line, index) => {
-                const [equivalenceClass, a, b, c, expect] = line.split(',').map(item => item.trim())
-                return {
-                  id: this.tableData.length + index + 1,
-                  equivalenceClass,
-                  a,
-                  b,
-                  c,
-                  expect,
-                  real: '',
-                  result: ''
-                }
-              })
-            this.tableData = [...this.tableData, ...newCases]
-            this.$message.success(`成功导入${newCases.length}个测试用例`)
-          }
-          reader.readAsText(file.raw)
-        } else {
-          // 处理Excel文件
-          this.tableData = response
+  methods: {
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
+      // 清空对应的测试用例列表
+      this.tableData = []
+      this.fileList = []
+    },
+    handlePreview (file) {
+      console.log(file)
+    },
+    handleExceed (files, fileList) {
+      this.$message.warning(`当前限制选择 100 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove (file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleRemove2 (file, fileList) {
+      console.log(file, fileList)
+      // 清空对应的测试用例列表
+      this.tableData2 = []
+      this.fileList2 = []
+    },
+    handlePreview2 (file) {
+      console.log(file)
+    },
+    handleExceed2 (files, fileList) {
+      this.$message.warning(`当前限制选择 100 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove2 (file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleCsvUpload (options) {
+      const file = options.file
+      if (file.name.endsWith('.csv')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const text = e.target.result
+          const lines = text.split('\n')
+          const newCases = lines
+            .filter(line => line.trim())
+            .map((line, index) => {
+              const [equivalenceClass, a, b, c, expect] = line.split(',').map(item => item.trim())
+              return {
+                id: this.tableData.length + index + 1,
+                equivalenceClass,
+                a,
+                b,
+                c,
+                expect,
+                real: '',
+                result: ''
+              }
+            })
+          this.tableData = [...this.tableData, ...newCases]
+          this.$message.success(`成功导入${newCases.length}个测试用例`)
         }
-      },
-      handleRemove2 (file, fileList) {
-        console.log(file, fileList)
-        // 清空对应的测试用例列表
-        this.tableData2 = []
-        this.fileList2 = []
-      },
-      handlePreview2 (file) {
-        console.log(file)
-      },
-      handleExceed2 (files, fileList) {
-        this.$message.warning(`当前限制选择 100 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-      },
-      // eslint-disable-next-line no-unused-vars
-      beforeRemove2 (file, fileList) {
-        return this.$confirm(`确定移除 ${file.name}？`)
-      },
-
-      // eslint-disable-next-line no-unused-vars
-      Success2 (response, file) {
-        if (file.name.endsWith('.csv')) {
-          // 处理CSV文件
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const text = e.target.result
-            const lines = text.split('\n')
-            const newCases = lines
-              .filter(line => line.trim()) // 过滤空行
-              .map((line, index) => {
-                const [equivalenceClass, property, a, b, c, expect] = line.split(',').map(item => item.trim())
-                return {
-                  id: this.tableData2.length + index + 1,
-                  equivalenceClass,
-                  property,
-                  a,
-                  b,
-                  c,
-                  expect,
-                  real: '',
-                  result: ''
-                }
-              })
-            this.tableData2 = [...this.tableData2, ...newCases]
-            this.$message.success(`成功导入${newCases.length}个测试用例`)
-          }
-          reader.readAsText(file.raw)
-        } else {
-          // 处理Excel文件
-          this.$axios.post('http://localhost:5000/triangleType', file).then(response => {
-            this.tableData2 = response.data
-          })
-        }
-      },
-      submitForm () {
-        if (!this.form.a || !this.form.b || !this.form.c || !this.form.expect) {
-          this.$message.error('请填写完整的测试用例信息')
-          return
-        }
-        const newCase = {
-          id: this.tableData.length + 1,
-          a: this.form.a,
-          b: this.form.b,
-          c: this.form.c,
-          expect: this.form.expect,
-          real: '',
-          result: '',
-          equivalenceClass: this.form.equivalenceClass
-        }
-        this.tableData.push(newCase)
-        this.form = { a: '', b: '', c: '', expect: '', equivalenceClass: '' }
-        this.$message.success('测试用例添加成功')
-      },
-
-      submitForm2 () {
-        if (!this.form2.property || !this.form2.a || !this.form2.b || !this.form2.c || !this.form2.expect) {
-          this.$message.error('请填写完整的测试用例信息')
-          return
-        }
-        const newCase = {
-          id: this.tableData2.length + 1,
-          property: this.form2.property,
-          a: this.form2.a,
-          b: this.form2.b,
-          c: this.form2.c,
-          expect: this.form2.expect,
-          equivalenceClass: this.form2.equivalenceClass,
-          real: '',
-          result: ''
-        }
-        this.tableData2.push(newCase)
-        this.form2 = { property: '', a: '', b: '', c: '', expect: '', equivalenceClass: '' }
-        this.$message.success('测试用例添加成功')
-      },
-
-      async testAll () {
-        try {
-          const response = await this.$axios.post('http://localhost:5000/testAllTriangle', {
-            testCases: this.tableData.map(item => ({
-              a: item.a,
-              b: item.b,
-              c: item.c,
-              expect: item.expect
-            })),
-            range: {
-              min: this.range.min,
-              max: this.range.max
-            }
-          })
-          // 更新表格数据，保留原有的测试用例信息，只更新实际结果和是否通过
-          this.tableData = this.tableData.map((item, index) => ({
-            ...item,
-            real: response.data[index].real,
-            result: response.data[index].result
-          }))
-          this.$message.success('所有测试用例执行完成')
-        } catch (error) {
-          this.$message.error('测试执行失败')
-        }
-      },
-
-      async testAll2 () {
-        try {
-          const response = await this.$axios.post('http://localhost:5000/testAllTriangle', {
-            testCases: this.tableData2.map(item => ({
-              a: item.a,
-              b: item.b,
-              c: item.c,
-              expect: item.expect
-            })),
-            range: {
-              min: this.range2.min,
-              max: this.range2.max
-            }
-          })
-          // 更新表格数据，保留原有的测试用例信息，只更新实际结果和是否通过
-          this.tableData2 = this.tableData2.map((item, index) => ({
-            ...item,
-            real: response.data[index].real,
-            result: response.data[index].result
-          }))
-          this.$message.success('所有测试用例执行完成')
-        } catch (error) {
-          this.$message.error('测试执行失败')
-        }
-      },
-
-      applyRange () {
-        // 验证输入范围
-        if (this.range.min >= this.range.max) {
-          this.$message.error('最小值必须小于最大值')
-          return
-        }
-        // 验证当前测试用例是否在范围内
-        const invalidCases = this.tableData.filter(testCase => {
-          const a = Number(testCase.a)
-          const b = Number(testCase.b)
-          const c = Number(testCase.c)
-          return a < this.range.min || a > this.range.max ||
-                 b < this.range.min || b > this.range.max ||
-                 c < this.range.min || c > this.range.max
-        })
-        if (invalidCases.length > 0) {
-          this.$message.warning(`有${invalidCases.length}个测试用例超出范围，请检查`)
-        } else {
-          this.$message.success('范围设置成功')
-        }
-      },
-
-      applyRange2 () {
-        // 验证输入范围
-        if (this.range2.min >= this.range2.max) {
-          this.$message.error('最小值必须小于最大值')
-          return
-        }
-        // 验证当前测试用例是否在范围内
-        const invalidCases = this.tableData2.filter(testCase => {
-          const a = Number(testCase.a)
-          const b = Number(testCase.b)
-          const c = Number(testCase.c)
-          return a < this.range2.min || a > this.range2.max ||
-                 b < this.range2.min || b > this.range2.max ||
-                 c < this.range2.min || c > this.range2.max
-        })
-        if (invalidCases.length > 0) {
-          this.$message.warning(`有${invalidCases.length}个测试用例超出范围，请检查`)
-        } else {
-          this.$message.success('范围设置成功')
-        }
-      },
-
-      handleCsvUpload (options) {
-        const file = options.file
-        if (file.name.endsWith('.csv')) {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const text = e.target.result
-            const lines = text.split('\n')
-            const newCases = lines
-              .filter(line => line.trim()) // 过滤空行
-              .map((line, index) => {
-                const [equivalenceClass, a, b, c, expect] = line.split(',').map(item => item.trim())
-                return {
-                  id: this.tableData.length + index + 1,
-                  equivalenceClass,
-                  a,
-                  b,
-                  c,
-                  expect,
-                  real: '',
-                  result: ''
-                }
-              })
-            this.tableData = [...this.tableData, ...newCases]
-            this.$message.success(`成功导入${newCases.length}个测试用例`)
-          }
-          reader.readAsText(file)
-        } else {
-          // 处理Excel文件
-          this.$axios.post('http://localhost:5000/triangleType', file).then(response => {
-            this.tableData = response.data
-          })
-        }
-      },
-
-      handleCsvUpload2 (options) {
-        const file = options.file
-        if (file.name.endsWith('.csv')) {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const text = e.target.result
-            const lines = text.split('\n')
-            const newCases = lines
-              .filter(line => line.trim()) // 过滤空行
-              .map((line, index) => {
-                const [equivalenceClass, property, a, b, c, expect] = line.split(',').map(item => item.trim())
-                return {
-                  id: this.tableData2.length + index + 1,
-                  equivalenceClass,
-                  property,
-                  a,
-                  b,
-                  c,
-                  expect,
-                  real: '',
-                  result: ''
-                }
-              })
-            this.tableData2 = [...this.tableData2, ...newCases]
-            this.$message.success(`成功导入${newCases.length}个测试用例`)
-          }
-          reader.readAsText(file)
-        } else {
-          // 处理Excel文件
-          this.$axios.post('http://localhost:5000/triangleType', file).then(response => {
-            this.tableData2 = response.data
-          })
-        }
-      },
-
-      clearAll () {
-        this.$confirm('确定要清空所有测试用例吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.tableData = []
-          this.fileList = []
-          this.$message.success('已清空所有测试用例')
-        }).catch(() => {
-          this.$message.info('已取消清空操作')
-        })
-      },
-
-      clearAll2 () {
-        this.$confirm('确定要清空所有测试用例吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.tableData2 = []
-          this.fileList2 = []
-          this.$message.success('已清空所有测试用例')
-        }).catch(() => {
-          this.$message.info('已取消清空操作')
+        reader.readAsText(file)
+      } else {
+        axios.post('http://localhost:5000/triangleType', file).then(response => {
+          this.tableData = response.data
         })
       }
+    },
+    handleCsvUpload2 (options) {
+      const file = options.file
+      if (file.name.endsWith('.csv')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const text = e.target.result
+          const lines = text.split('\n')
+          const newCases = lines
+            .filter(line => line.trim())
+            .map((line, index) => {
+              const [equivalenceClass, property, a, b, c, expect] = line.split(',').map(item => item.trim())
+              return {
+                id: this.tableData2.length + index + 1,
+                equivalenceClass,
+                property,
+                a,
+                b,
+                c,
+                expect,
+                real: '',
+                result: ''
+              }
+            })
+          this.tableData2 = [...this.tableData2, ...newCases]
+          this.$message.success(`成功导入${newCases.length}个测试用例`)
+        }
+        reader.readAsText(file)
+      } else {
+        axios.post('http://localhost:5000/triangleType', file).then(response => {
+          this.tableData2 = response.data
+        })
+      }
+    },
+    submitForm () {
+      if (!this.form.a || !this.form.b || !this.form.c || !this.form.expect) {
+        this.$message.error('请填写完整的测试用例信息')
+        return
+      }
+      const newCase = {
+        id: this.tableData.length + 1,
+        a: this.form.a,
+        b: this.form.b,
+        c: this.form.c,
+        expect: this.form.expect,
+        real: '',
+        result: '',
+        equivalenceClass: this.form.equivalenceClass
+      }
+      this.tableData.push(newCase)
+      this.form = { a: '', b: '', c: '', expect: '', equivalenceClass: '' }
+      this.$message.success('测试用例添加成功')
+    },
+    submitForm2 () {
+      if (!this.form2.property || !this.form2.a || !this.form2.b || !this.form2.c || !this.form2.expect) {
+        this.$message.error('请填写完整的测试用例信息')
+        return
+      }
+      const newCase = {
+        id: this.tableData2.length + 1,
+        property: this.form2.property,
+        a: this.form2.a,
+        b: this.form2.b,
+        c: this.form2.c,
+        expect: this.form2.expect,
+        equivalenceClass: this.form2.equivalenceClass,
+        real: '',
+        result: ''
+      }
+      this.tableData2.push(newCase)
+      this.form2 = { property: '', a: '', b: '', c: '', expect: '', equivalenceClass: '' }
+      this.$message.success('测试用例添加成功')
+    },
+    async testAll () {
+      try {
+        const response = await axios.post('http://localhost:5000/testAllTriangle', {
+          testCases: this.tableData.map(item => ({
+            a: item.a,
+            b: item.b,
+            c: item.c,
+            expect: item.expect
+          }))
+        })
+        this.tableData = this.tableData.map((item, index) => ({
+          ...item,
+          real: response.data[index].real,
+          result: response.data[index].result
+        }))
+        // 计算成功率
+        const passedCount = this.tableData.filter(item => item.result === '通过').length
+        this.successRate = Math.round((passedCount / this.tableData.length) * 100)
+        this.$message.success('所有测试用例执行完成')
+      } catch (error) {
+        this.$message.error('测试执行失败')
+      }
+    },
+    async testAll2 () {
+      try {
+        const response = await axios.post('http://localhost:5000/testAllTriangle', {
+          testCases: this.tableData2.map(item => ({
+            a: item.a,
+            b: item.b,
+            c: item.c,
+            expect: item.expect
+          }))
+        })
+        this.tableData2 = this.tableData2.map((item, index) => ({
+          ...item,
+          real: response.data[index].real,
+          result: response.data[index].result
+        }))
+        // 计算成功率
+        const passedCount = this.tableData2.filter(item => item.result === '通过').length
+        this.successRate2 = Math.round((passedCount / this.tableData2.length) * 100)
+        this.$message.success('所有测试用例执行完成')
+      } catch (error) {
+        this.$message.error('测试执行失败')
+      }
+    },
+    clearAll () {
+      this.$confirm('确定要清空所有测试用例吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData = []
+        this.fileList = []
+        this.$message.success('已清空所有测试用例')
+      }).catch(() => {
+        this.$message.info('已取消清空操作')
+      })
+    },
+    clearAll2 () {
+      this.$confirm('确定要清空所有测试用例吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData2 = []
+        this.fileList2 = []
+        this.$message.success('已清空所有测试用例')
+      }).catch(() => {
+        this.$message.info('已取消清空操作')
+      })
     }
+  }
 }
 </script>
 
@@ -636,15 +503,6 @@ export default {
   padding: 20px;
   background-color: #f5f7fa;
   border-radius: 4px;
-}
-.range-setting {
-  margin: 20px 0;
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-}
-.range-separator {
-  margin: 0 10px;
 }
 .upload-demo {
   display: inline-block;

@@ -68,6 +68,14 @@
     <div>
       <el-button type="primary" @click="testAll" style="margin-left: 10px">测试所有用例</el-button>
       <el-button type="danger" @click="clearAll" style="margin-left: 10px">清空测试用例</el-button>
+      <div v-if="tableData.length > 0" style="margin-top: 10px">
+        <el-alert
+          :title="`测试通过率: ${successRate}%`"
+          :type="successRate === 100 ? 'success' : successRate >= 80 ? 'warning' : 'error'"
+          :closable="false"
+          show-icon>
+        </el-alert>
+      </div>
     </div>
     <template>
       <el-table
@@ -113,6 +121,11 @@
           prop="result"
           label="是否通过"
           width="180">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result" :type="scope.row.result === '通过' ? 'success' : 'danger'">
+              {{ scope.row.result }}
+            </el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -120,12 +133,15 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'computerSale',
   data () {
     return {
       tableData: [],
       fileList: [],
+      successRate: 0,
       form: {
         property: '',
         host: '',
@@ -203,7 +219,7 @@ export default {
     },
     async testAll () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllComputerSale', {
+        const response = await axios.post('http://localhost:5000/testAllComputerSale', {
           testCases: this.tableData.map(item => ({
             host: item.host,
             monitor: item.monitor,
@@ -211,12 +227,14 @@ export default {
             expect: item.expect
           }))
         })
-        // 更新表格数据，保留原有的测试用例信息，只更新实际结果和是否通过
         this.tableData = this.tableData.map((item, index) => ({
           ...item,
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.tableData.filter(item => item.result === '通过').length
+        this.successRate = Math.round((passedCount / this.tableData.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -263,7 +281,7 @@ export default {
         reader.readAsText(file)
       } else {
         // 处理Excel文件
-        this.$axios.post('http://localhost:5000/computerSales', file).then(response => {
+        axios.post('http://localhost:5000/computerSales', file).then(response => {
           this.tableData = response.data
         })
       }

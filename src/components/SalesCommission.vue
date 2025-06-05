@@ -12,28 +12,7 @@
       <h3>流程图</h3>
       <div class="flow-chart-content">
         <div class="mermaid-container">
-          <div class="mermaid" @click="showFlowChartDialog">
-            flowchart TD
-              A[Start] --> B[Input: Sales, Days, CashRatio]
-              B --> C{Sales &lt; 0 OR Days &lt; 0 OR CashRatio &lt; 0 ?}
-              C -->|Yes|M[End]
-              C -->|No| E{Sales &gt; 2 million AND Days ≤ 10?}
-              E -->|Yes| F{CashRatio ≥ 60%?}
-              F -->|Yes| G[Commission = Sales / 7]
-              F -->|No| H[Commission = 0]
-              E -->|No| I{CashRatio ≤ 85%?}
-              I -->|Yes| J[Commission = Sales / 6]
-              I -->|No| K[Commission = Sales / 5]
-              G --> L[Output Commission]
-              H --> L
-              J --> L
-              K --> L
-              L --> M
-          </div>
-          <div class="click-hint">
-            <i class="el-icon-zoom-in"></i>
-            <span>点击查看大图</span>
-          </div>
+          <el-button type="primary" @click="showFlowChartDialog">查看流程图</el-button>
         </div>
       </div>
     </div>
@@ -112,6 +91,14 @@
         <div>
           <el-button type="primary" @click="testAllStatement" style="margin-left: 10px">测试所有用例</el-button>
           <el-button type="danger" @click="clearAllStatement" style="margin-left: 10px">清空测试用例</el-button>
+          <div v-if="statementCoverageCases.length > 0" style="margin-top: 10px">
+            <el-alert
+              :title="`测试通过率: ${successRate}%`"
+              :type="successRate === 100 ? 'success' : successRate >= 80 ? 'warning' : 'error'"
+              :closable="false"
+              show-icon>
+            </el-alert>
+          </div>
         </div>
         <el-table :data="statementCoverageCases" border style="width: 100%">
           <el-table-column prop="id" label="用例编号" width="100"></el-table-column>
@@ -120,7 +107,12 @@
           <el-table-column prop="cashRatio" label="现金到账率" width="120"></el-table-column>
           <el-table-column prop="expectedCommission" label="预期佣金值" width="120"></el-table-column>
           <el-table-column prop="real" label="实际结果" width="120"></el-table-column>
-          <el-table-column prop="result" label="是否通过" width="120"></el-table-column>
+          <el-table-column prop="result" label="是否通过" width="120">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+              <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -167,6 +159,14 @@
         <div>
           <el-button type="primary" @click="testAllDecision" style="margin-left: 10px">测试所有用例</el-button>
           <el-button type="danger" @click="clearAllDecision" style="margin-left: 10px">清空测试用例</el-button>
+          <div v-if="decisionCoverageCases.length > 0" style="margin-top: 10px">
+            <el-alert
+              :title="`测试通过率: ${successRate2}%`"
+              :type="successRate2 === 100 ? 'success' : successRate2 >= 80 ? 'warning' : 'error'"
+              :closable="false"
+              show-icon>
+            </el-alert>
+          </div>
         </div>
         <el-table :data="decisionCoverageCases" border style="width: 100%">
           <el-table-column prop="id" label="用例编号" width="100"></el-table-column>
@@ -175,7 +175,12 @@
           <el-table-column prop="cashRatio" label="现金到账率" width="120"></el-table-column>
           <el-table-column prop="expectedCommission" label="预期佣金值" width="120"></el-table-column>
           <el-table-column prop="real" label="实际结果" width="120"></el-table-column>
-          <el-table-column prop="result" label="是否通过" width="120"></el-table-column>
+          <el-table-column prop="result" label="是否通过" width="120">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+              <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -222,6 +227,14 @@
         <div>
           <el-button type="primary" @click="testAllCondition" style="margin-left: 10px">测试所有用例</el-button>
           <el-button type="danger" @click="clearAllCondition" style="margin-left: 10px">清空测试用例</el-button>
+          <div v-if="conditionCoverageCases.length > 0" style="margin-top: 10px">
+            <el-alert
+              :title="`测试通过率: ${successRate3}%`"
+              :type="successRate3 === 100 ? 'success' : successRate3 >= 80 ? 'warning' : 'error'"
+              :closable="false"
+              show-icon>
+            </el-alert>
+          </div>
         </div>
         <el-table :data="conditionCoverageCases" border style="width: 100%">
           <el-table-column prop="id" label="用例编号" width="100"></el-table-column>
@@ -230,7 +243,12 @@
           <el-table-column prop="cashRatio" label="现金到账率" width="120"></el-table-column>
           <el-table-column prop="expectedCommission" label="预期佣金值" width="120"></el-table-column>
           <el-table-column prop="real" label="实际结果" width="120"></el-table-column>
-          <el-table-column prop="result" label="是否通过" width="120"></el-table-column>
+          <el-table-column prop="result" label="是否通过" width="120">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+              <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -277,6 +295,14 @@
         <div>
           <el-button type="primary" @click="testAllDecisionCondition" style="margin-left: 10px">测试所有用例</el-button>
           <el-button type="danger" @click="clearAllDecisionCondition" style="margin-left: 10px">清空测试用例</el-button>
+          <div v-if="decisionConditionCoverageCases.length > 0" style="margin-top: 10px">
+            <el-alert
+              :title="`测试通过率: ${successRate4}%`"
+              :type="successRate4 === 100 ? 'success' : successRate4 >= 80 ? 'warning' : 'error'"
+              :closable="false"
+              show-icon>
+            </el-alert>
+          </div>
         </div>
         <el-table :data="decisionConditionCoverageCases" border style="width: 100%">
           <el-table-column prop="id" label="用例编号" width="100"></el-table-column>
@@ -285,7 +311,12 @@
           <el-table-column prop="cashRatio" label="现金到账率" width="120"></el-table-column>
           <el-table-column prop="expectedCommission" label="预期佣金值" width="120"></el-table-column>
           <el-table-column prop="real" label="实际结果" width="120"></el-table-column>
-          <el-table-column prop="result" label="是否通过" width="120"></el-table-column>
+          <el-table-column prop="result" label="是否通过" width="120">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+              <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -332,6 +363,14 @@
         <div>
           <el-button type="primary" @click="testAllConditionCombination" style="margin-left: 10px">测试所有用例</el-button>
           <el-button type="danger" @click="clearAllConditionCombination" style="margin-left: 10px">清空测试用例</el-button>
+          <div v-if="conditionCombinationCases.length > 0" style="margin-top: 10px">
+            <el-alert
+              :title="`测试通过率: ${successRate5}%`"
+              :type="successRate5 === 100 ? 'success' : successRate5 >= 80 ? 'warning' : 'error'"
+              :closable="false"
+              show-icon>
+            </el-alert>
+          </div>
         </div>
         <el-table :data="conditionCombinationCases" border style="width: 100%">
           <el-table-column prop="id" label="用例编号" width="100"></el-table-column>
@@ -340,7 +379,12 @@
           <el-table-column prop="cashRatio" label="现金到账率" width="120"></el-table-column>
           <el-table-column prop="expectedCommission" label="预期佣金值" width="120"></el-table-column>
           <el-table-column prop="real" label="实际结果" width="120"></el-table-column>
-          <el-table-column prop="result" label="是否通过" width="120"></el-table-column>
+          <el-table-column prop="result" label="是否通过" width="120">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+              <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </div>
@@ -348,6 +392,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'SalesCommission',
   data () {
@@ -363,6 +409,7 @@ export default {
       },
       statementFileList: [],
       statementCoverageCases: [],
+      successRate: 0,
 
       // 判断覆盖测试用例相关数据
       decisionForm: {
@@ -373,6 +420,7 @@ export default {
       },
       decisionFileList: [],
       decisionCoverageCases: [],
+      successRate2: 0,
 
       // 条件覆盖测试用例相关数据
       conditionForm: {
@@ -383,6 +431,7 @@ export default {
       },
       conditionFileList: [],
       conditionCoverageCases: [],
+      successRate3: 0,
 
       // 判断-条件覆盖测试用例相关数据
       decisionConditionForm: {
@@ -393,6 +442,7 @@ export default {
       },
       decisionConditionFileList: [],
       decisionConditionCoverageCases: [],
+      successRate4: 0,
 
       // 条件组合覆盖测试用例相关数据
       conditionCombinationForm: {
@@ -402,7 +452,8 @@ export default {
         expectedCommission: ''
       },
       conditionCombinationFileList: [],
-      conditionCombinationCases: []
+      conditionCombinationCases: [],
+      successRate5: 0
     }
   },
   mounted () {
@@ -411,7 +462,7 @@ export default {
     script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'
     script.onload = () => {
       window.mermaid.initialize({
-        startOnLoad: false,
+        startOnLoad: true,
         theme: 'default',
         securityLevel: 'loose',
         flowchart: {
@@ -428,19 +479,21 @@ export default {
   methods: {
     initMermaid () {
       if (this.mermaidInitialized) {
-        this.$nextTick(() => {
-          try {
-            window.mermaid.init(undefined, document.querySelectorAll('.mermaid'))
-          } catch (error) {
-            console.error('Mermaid initialization error:', error)
-          }
-        })
+        try {
+          window.mermaid.init(undefined, '.mermaid')
+        } catch (error) {
+          console.error('Mermaid initialization error:', error)
+        }
       }
     },
     showFlowChartDialog () {
       this.flowChartDialogVisible = true
       this.$nextTick(() => {
-        this.initMermaid()
+        try {
+          window.mermaid.init(undefined, '.flow-chart-dialog .mermaid')
+        } catch (error) {
+          console.error('Mermaid dialog initialization error:', error)
+        }
       })
     },
     handleFlowChartDialogClose (done) {
@@ -508,7 +561,7 @@ export default {
     },
     async testAllStatement () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllSalesCommission', {
+        const response = await axios.post('http://localhost:5000/testAllSalesCommission', {
           testCases: this.statementCoverageCases.map(item => ({
             sales: item.sales,
             leaveDays: item.leaveDays,
@@ -521,6 +574,9 @@ export default {
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.statementCoverageCases.filter(item => item.result === '通过').length
+        this.successRate = Math.round((passedCount / this.statementCoverageCases.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -565,7 +621,7 @@ export default {
         }
         reader.readAsText(file)
       } else {
-        this.$axios.post('http://localhost:5000/salesCommission', file).then(response => {
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
           this.statementCoverageCases = response.data
         })
       }
@@ -624,7 +680,7 @@ export default {
     },
     async testAllDecision () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllSalesCommission', {
+        const response = await axios.post('http://localhost:5000/testAllSalesCommission', {
           testCases: this.decisionCoverageCases.map(item => ({
             sales: item.sales,
             leaveDays: item.leaveDays,
@@ -637,6 +693,9 @@ export default {
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.decisionCoverageCases.filter(item => item.result === '通过').length
+        this.successRate2 = Math.round((passedCount / this.decisionCoverageCases.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -681,7 +740,7 @@ export default {
         }
         reader.readAsText(file)
       } else {
-        this.$axios.post('http://localhost:5000/salesCommission', file).then(response => {
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
           this.decisionCoverageCases = response.data
         })
       }
@@ -740,7 +799,7 @@ export default {
     },
     async testAllCondition () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllSalesCommission', {
+        const response = await axios.post('http://localhost:5000/testAllSalesCommission', {
           testCases: this.conditionCoverageCases.map(item => ({
             sales: item.sales,
             leaveDays: item.leaveDays,
@@ -753,6 +812,9 @@ export default {
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.conditionCoverageCases.filter(item => item.result === '通过').length
+        this.successRate3 = Math.round((passedCount / this.conditionCoverageCases.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -797,7 +859,7 @@ export default {
         }
         reader.readAsText(file)
       } else {
-        this.$axios.post('http://localhost:5000/salesCommission', file).then(response => {
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
           this.conditionCoverageCases = response.data
         })
       }
@@ -856,7 +918,7 @@ export default {
     },
     async testAllDecisionCondition () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllSalesCommission', {
+        const response = await axios.post('http://localhost:5000/testAllSalesCommission', {
           testCases: this.decisionConditionCoverageCases.map(item => ({
             sales: item.sales,
             leaveDays: item.leaveDays,
@@ -869,6 +931,9 @@ export default {
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.decisionConditionCoverageCases.filter(item => item.result === '通过').length
+        this.successRate4 = Math.round((passedCount / this.decisionConditionCoverageCases.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -913,7 +978,7 @@ export default {
         }
         reader.readAsText(file)
       } else {
-        this.$axios.post('http://localhost:5000/salesCommission', file).then(response => {
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
           this.decisionConditionCoverageCases = response.data
         })
       }
@@ -949,7 +1014,9 @@ export default {
         }
         reader.readAsText(file.raw)
       } else {
-        this.conditionCombinationCases = response
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
+          this.conditionCombinationCases = response.data
+        })
       }
     },
     submitConditionCombinationForm () {
@@ -972,7 +1039,7 @@ export default {
     },
     async testAllConditionCombination () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllSalesCommission', {
+        const response = await axios.post('http://localhost:5000/testAllSalesCommission', {
           testCases: this.conditionCombinationCases.map(item => ({
             sales: item.sales,
             leaveDays: item.leaveDays,
@@ -985,6 +1052,9 @@ export default {
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.conditionCombinationCases.filter(item => item.result === '通过').length
+        this.successRate5 = Math.round((passedCount / this.conditionCombinationCases.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
@@ -1029,7 +1099,7 @@ export default {
         }
         reader.readAsText(file)
       } else {
-        this.$axios.post('http://localhost:5000/salesCommission', file).then(response => {
+        axios.post('http://localhost:5000/salesCommission', file).then(response => {
           this.conditionCombinationCases = response.data
         })
       }

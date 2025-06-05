@@ -2,30 +2,18 @@
   <div>
     <h1>万年历问题</h1>
     <p class="question">
-      对应问题2:万年历问题（用边界值方法分别分析和设计测试用例）此处假设年的范围由输入指定[start,end]，月的范围为[1,12]，日的范围为[1,31]。
+      对应问题2:万年历问题（用边界值方法分别分析和设计测试用例）此处假设年的范围为[1900,2100]，月的范围为[1,12]，日的范围为[1,31]。
     </p>
     <p class="question">
       对应问题10:万年历问题（等价类方法分别分析和设计测试用例）。
-      此处假设年的范围由输入指定[start,end]，月的范围为[1,12]，日的范围为[1,31]。
+      此处假设年的范围为[1900,2100]，月的范围为[1,12]，日的范围为[1,31]。
     </p>
     <p class="question">
       对应问题11：万年历问题（用决策表设计测试用例，将年份划分成：非闰年，被4整除不被100整除的闰年和被400整除的闰年）。
-      此处假设年的范围由输入指定[start,end]，月的范围为[1,12]，日的范围为[1,31]。
+      此处假设年的范围为[1900,2100]，月的范围为[1,12]，日的范围为[1,31]。
     </p>
     <el-divider></el-divider>
     <h2>边界值法</h2>
-    <div class="range-setting">
-      <el-form :inline="true" :model="range2" class="demo-form-inline">
-        <el-form-item label="年份范围">
-          <el-input-number v-model="range2.minYear" :min="1" :max="range2.maxYear" placeholder="最小年份"></el-input-number>
-          <span class="range-separator">至</span>
-          <el-input-number v-model="range2.maxYear" :min="range2.minYear" placeholder="最大年份"></el-input-number>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="applyRange2">应用范围</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
     <div class="manual-input">
       <el-form :inline="true" :model="form2" class="demo-form-inline">
         <el-form-item label="属性">
@@ -61,12 +49,11 @@
           <el-input v-model="form2.day" placeholder="请输入日期"></el-input>
         </el-form-item>
         <el-form-item label="预期结果">
-          <el-select v-model="form2.expect" placeholder="请选择预期结果">
+          <el-select v-model="form2.expect" placeholder="请选择/输入预期结果" allow-create filterable>
             <el-option label="年份越界" value="年份越界"></el-option>
             <el-option label="月份越界" value="月份越界"></el-option>
             <el-option label="日期越界" value="日期越界"></el-option>
             <el-option label="日期不合法" value="日期不合法"></el-option>
-            <el-option label="日期合法" value="日期合法"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -95,6 +82,14 @@
     <div>
       <el-button type="primary" @click="testAll2" style="margin-left: 10px">测试所有用例</el-button>
       <el-button type="danger" @click="clearAll2" style="margin-left: 10px">清空测试用例</el-button>
+      <div v-if="tableData2.length > 0" style="margin-top: 10px">
+        <el-alert
+          :title="`测试通过率: ${successRate2}%`"
+          :type="successRate2 === 100 ? 'success' : successRate2 >= 80 ? 'warning' : 'error'"
+          :closable="false"
+          show-icon>
+        </el-alert>
+      </div>
     </div>
     <template>
       <el-table
@@ -140,23 +135,16 @@
           prop="result"
           label="是否通过"
           width="180">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result" :type="scope.row.result === '通过' ? 'success' : 'danger'">
+              {{ scope.row.result }}
+            </el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </template>
     <el-divider></el-divider>
     <h2>等价类法</h2>
-    <div class="range-setting">
-      <el-form :inline="true" :model="range" class="demo-form-inline">
-        <el-form-item label="年份范围">
-          <el-input-number v-model="range.minYear" :min="1" :max="range.maxYear" placeholder="最小年份"></el-input-number>
-          <span class="range-separator">至</span>
-          <el-input-number v-model="range.maxYear" :min="range.minYear" placeholder="最大年份"></el-input-number>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="applyRange">应用范围</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
     <div class="manual-input">
       <el-form :inline="true" :model="form" class="demo-form-inline">
         <el-form-item label="等价类类别">
@@ -192,12 +180,11 @@
           <el-input v-model="form.day" placeholder="请输入日期"></el-input>
         </el-form-item>
         <el-form-item label="预期结果">
-          <el-select v-model="form.expect" placeholder="请选择预期结果">
+          <el-select v-model="form.expect" placeholder="请选择/输入预期结果" allow-create filterable>
             <el-option label="年份越界" value="年份越界"></el-option>
             <el-option label="月份越界" value="月份越界"></el-option>
             <el-option label="日期越界" value="日期越界"></el-option>
             <el-option label="日期不合法" value="日期不合法"></el-option>
-            <el-option label="日期合法" value="日期合法"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -226,6 +213,14 @@
     <div>
       <el-button type="primary" @click="testAll" style="margin-left: 10px">测试所有用例</el-button>
       <el-button type="danger" @click="clearAll" style="margin-left: 10px">清空测试用例</el-button>
+      <div v-if="tableData.length > 0" style="margin-top: 10px">
+        <el-alert
+          :title="`测试通过率: ${successRate}%`"
+          :type="successRate === 100 ? 'success' : successRate >= 80 ? 'warning' : 'error'"
+          :closable="false"
+          show-icon>
+        </el-alert>
+      </div>
     </div>
     <template>
       <el-table
@@ -281,30 +276,23 @@
           prop="result"
           label="是否通过"
           width="180">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result" :type="scope.row.result === '通过' ? 'success' : 'danger'">
+              {{ scope.row.result }}
+            </el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </template>
     <el-divider></el-divider>
     <h2>决策表法</h2>
-    <div class="range-setting">
-      <el-form :inline="true" :model="range3" class="demo-form-inline">
-        <el-form-item label="年份范围">
-          <el-input-number v-model="range3.minYear" :min="1" :max="range3.maxYear" placeholder="最小年份"></el-input-number>
-          <span class="range-separator">至</span>
-          <el-input-number v-model="range3.maxYear" :min="range3.minYear" placeholder="最大年份"></el-input-number>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="applyRange3">应用范围</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
     <div class="manual-input">
       <el-form :inline="true" :model="form3" class="demo-form-inline">
         <el-form-item label="决策条件">
           <el-select v-model="form3.yearDecision" placeholder="请选择年份决策条件" style="margin-right: 10px">
-            <el-option label="非闰年" value="非闰年"></el-option>
-            <el-option label="被4整除不被100整除的闰年" value="被4整除不被100整除的闰年"></el-option>
-            <el-option label="被400整除的闰年" value="被400整除的闰年"></el-option>
+            <el-option label="Y1 = 非闰年" value="非闰年"></el-option>
+            <el-option label="Y2 = 被4整除不被100整除的闰年" value="被4整除不被100整除的闰年"></el-option>
+            <el-option label="Y3 = 被400整除的闰年" value="被400整除的闰年"></el-option>
           </el-select>
           <el-select v-model="form3.monthDecision" placeholder="请选择月份决策条件" style="margin-right: 10px">
             <el-option label="M1 = {2}" value="M1"></el-option>
@@ -330,12 +318,11 @@
           <el-input v-model="form3.day" placeholder="请输入日期"></el-input>
         </el-form-item>
         <el-form-item label="预期结果">
-          <el-select v-model="form3.expect" placeholder="请选择预期结果">
+          <el-select v-model="form3.expect" placeholder="请选择/输入预期结果" allow-create filterable>
             <el-option label="年份越界" value="年份越界"></el-option>
             <el-option label="月份越界" value="月份越界"></el-option>
             <el-option label="日期越界" value="日期越界"></el-option>
             <el-option label="日期不合法" value="日期不合法"></el-option>
-            <el-option label="日期合法" value="日期合法"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -364,6 +351,14 @@
     <div>
       <el-button type="primary" @click="testAll3" style="margin-left: 10px">测试所有用例</el-button>
       <el-button type="danger" @click="clearAll3" style="margin-left: 10px">清空测试用例</el-button>
+      <div v-if="tableData3.length > 0" style="margin-top: 10px">
+        <el-alert
+          :title="`测试通过率: ${successRate3}%`"
+          :type="successRate3 === 100 ? 'success' : successRate3 >= 80 ? 'warning' : 'error'"
+          :closable="false"
+          show-icon>
+        </el-alert>
+      </div>
     </div>
     <template>
       <el-table
@@ -419,6 +414,11 @@
           prop="result"
           label="是否通过"
           width="180">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result" :type="scope.row.result === '通过' ? 'success' : 'danger'">
+              {{ scope.row.result }}
+            </el-tag>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -426,6 +426,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'calendar',
   data () {
@@ -436,6 +438,9 @@ export default {
       fileList: [],
       fileList2: [],
       fileList3: [],
+      successRate: 0,
+      successRate2: 0,
+      successRate3: 0,
       form: {
         year: '',
         month: '',
@@ -460,18 +465,6 @@ export default {
         month: '',
         day: '',
         expect: ''
-      },
-      range: {
-        minYear: 1,
-        maxYear: 9999
-      },
-      range2: {
-        minYear: 1,
-        maxYear: 9999
-      },
-      range3: {
-        minYear: 1,
-        maxYear: 9999
       }
     }
   },
@@ -612,80 +605,52 @@ export default {
     },
     async testAll () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllCalendar', {
+        const response = await axios.post('http://localhost:5000/testAllCalendar', {
           testCases: this.tableData.map(item => ({
             year: item.year,
             month: item.month,
             day: item.day,
             expect: item.expect
-          })),
-          range: {
-            minYear: this.range.minYear,
-            maxYear: this.range.maxYear
-          }
+          }))
         })
         this.tableData = this.tableData.map((item, index) => ({
           ...item,
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.tableData.filter(item => item.result === '通过').length
+        this.successRate = Math.round((passedCount / this.tableData.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
+        console.log('执行错误')
+        console.log(error)
         this.$message.error('测试执行失败')
       }
     },
     async testAll2 () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllCalendar', {
+        const response = await axios.post('http://127.0.0.1:5000/testAllCalendar', {
           testCases: this.tableData2.map(item => ({
             year: item.year,
             month: item.month,
             day: item.day,
             expect: item.expect
-          })),
-          range: {
-            minYear: this.range2.minYear,
-            maxYear: this.range2.maxYear
-          }
+          }))
         })
         this.tableData2 = this.tableData2.map((item, index) => ({
           ...item,
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.tableData2.filter(item => item.result === '通过').length
+        this.successRate2 = Math.round((passedCount / this.tableData2.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
+        console.log('执行错误')
+        console.log(error)
         this.$message.error('测试执行失败')
-      }
-    },
-    applyRange () {
-      if (this.range.minYear >= this.range.maxYear) {
-        this.$message.error('最小年份必须小于最大年份')
-        return
-      }
-      const invalidCases = this.tableData.filter(testCase => {
-        const year = Number(testCase.year)
-        return year < this.range.minYear || year > this.range.maxYear
-      })
-      if (invalidCases.length > 0) {
-        this.$message.warning(`有${invalidCases.length}个测试用例超出范围，请检查`)
-      } else {
-        this.$message.success('范围设置成功')
-      }
-    },
-    applyRange2 () {
-      if (this.range2.minYear >= this.range2.maxYear) {
-        this.$message.error('最小年份必须小于最大年份')
-        return
-      }
-      const invalidCases = this.tableData2.filter(testCase => {
-        const year = Number(testCase.year)
-        return year < this.range2.minYear || year > this.range2.maxYear
-      })
-      if (invalidCases.length > 0) {
-        this.$message.warning(`有${invalidCases.length}个测试用例超出范围，请检查`)
-      } else {
-        this.$message.success('范围设置成功')
       }
     },
     handleCsvUpload (options) {
@@ -850,41 +815,25 @@ export default {
     },
     async testAll3 () {
       try {
-        const response = await this.$axios.post('http://localhost:5000/testAllCalendar', {
+        const response = await axios.post('http://localhost:5000/testAllCalendar', {
           testCases: this.tableData3.map(item => ({
             year: item.year,
             month: item.month,
             day: item.day,
             expect: item.expect
-          })),
-          range: {
-            minYear: this.range3.minYear,
-            maxYear: this.range3.maxYear
-          }
+          }))
         })
         this.tableData3 = this.tableData3.map((item, index) => ({
           ...item,
           real: response.data[index].real,
           result: response.data[index].result
         }))
+        // 计算成功率
+        const passedCount = this.tableData3.filter(item => item.result === '通过').length
+        this.successRate3 = Math.round((passedCount / this.tableData3.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
         this.$message.error('测试执行失败')
-      }
-    },
-    applyRange3 () {
-      if (this.range3.minYear >= this.range3.maxYear) {
-        this.$message.error('最小年份必须小于最大年份')
-        return
-      }
-      const invalidCases = this.tableData3.filter(testCase => {
-        const year = Number(testCase.year)
-        return year < this.range3.minYear || year > this.range3.maxYear
-      })
-      if (invalidCases.length > 0) {
-        this.$message.warning(`有${invalidCases.length}个测试用例超出范围，请检查`)
-      } else {
-        this.$message.success('范围设置成功')
       }
     },
     handleCsvUpload3 (options) {
