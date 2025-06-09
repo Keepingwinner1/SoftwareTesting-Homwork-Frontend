@@ -1,8 +1,8 @@
 <template>
   <div>
   <h1>判断三角形类型</h1>
-  <p class="question">对应问题1：判断三角形类型（用边界值分析和设计测试用例）</p>
-  <p class="question">对应问题9：判断三角形类型（等价类方法分别分析和设计测试用例）</p>
+  <p class="question">对应问题1：判断三角形类型（用边界值分析和设计测试用例），本题假设边长范围为 (0,100]</p>
+  <p class="question">对应问题9：判断三角形类型（等价类方法分别分析和设计测试用例）, 本题假设边长范围为 (0,100]</p>
   <el-divider></el-divider>
   <h2>边界值法</h2>
     <div class="manual-input">
@@ -41,12 +41,16 @@
         </el-form-item>
         <el-form-item label="预期结果">
           <el-select v-model="form2.expect" placeholder="请选择预期结果">
-            <el-option label="边长小于下限" value="边长小于下限"></el-option>
-            <el-option label="边长大于上限" value="边长大于上限"></el-option>
             <el-option label="非三角形" value="非三角形"></el-option>
             <el-option label="等边三角形" value="等边三角形"></el-option>
             <el-option label="等腰三角形" value="等腰三角形"></el-option>
             <el-option label="普通三角形" value="普通三角形"></el-option>
+            <el-option label="a取值不能为0或负数" value="a取值不能为0或负数"></el-option>
+            <el-option label="b取值不能为0或负数" value="b取值不能为0或负数"></el-option>
+            <el-option label="c取值不能为0或负数" value="c取值不能为0或负数"></el-option>
+            <el-option label="a取值超出范围" value="a取值超出范围"></el-option>
+            <el-option label="b取值超出范围" value="b取值超出范围"></el-option>
+            <el-option label="c取值超出范围" value="c取值超出范围"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -136,7 +140,7 @@
       </el-table>
     </template>
   <el-divider></el-divider>
-  <h2>等价类法</h2>
+  <h2>等价类法-输入变量等价类</h2>
   <div class="manual-input">
     <el-form :inline="true" :model="form" class="demo-form-inline">
       <el-form-item label="等价类类别">
@@ -145,6 +149,7 @@
           <el-option label="a,b,c构成非等边等腰三角形" value="a,b,c构成非等边等腰三角形"></el-option>
           <el-option label="a,b,c构成一般三角形" value="a,b,c构成一般三角形"></el-option>
           <el-option label="a,b,c不构成三角形" value="a,b,c不构成三角形"></el-option>
+          <el-option label="a,b,c中存在非法值" value="a,b,c中存在非法值"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="边长a">
@@ -158,12 +163,16 @@
       </el-form-item>
       <el-form-item label="预期结果">
         <el-select v-model="form.expect" placeholder="请选择预期结果">
-          <el-option label="边长小于下限" value="边长小于下限"></el-option>
-          <el-option label="边长大于上限" value="边长大于上限"></el-option>
           <el-option label="非三角形" value="非三角形"></el-option>
           <el-option label="等边三角形" value="等边三角形"></el-option>
           <el-option label="等腰三角形" value="等腰三角形"></el-option>
           <el-option label="普通三角形" value="普通三角形"></el-option>
+          <el-option label="a取值不能为0或负数" value="a取值不能为0或负数"></el-option>
+          <el-option label="b取值不能为0或负数" value="b取值不能为0或负数"></el-option>
+          <el-option label="c取值不能为0或负数" value="c取值不能为0或负数"></el-option>
+          <el-option label="a取值超出范围" value="a取值超出范围"></el-option>
+          <el-option label="b取值超出范围" value="b取值超出范围"></el-option>
+          <el-option label="c取值超出范围" value="c取值超出范围"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -186,7 +195,6 @@
           已上传: {{ fileList[0].name }}
         </span>
       </el-upload>
-        <!-- <el-button type="success" @click="testAll">测试所有用例</el-button> -->
       </el-form-item>
     </el-form>
   </div>
@@ -253,6 +261,129 @@
       </el-table-column>
     </el-table>
   </template>
+
+  <el-divider></el-divider>
+  <h2>等价类法-输出变量等价类</h2>
+  <div class="manual-input">
+    <el-form :inline="true" :model="form3" class="demo-form-inline">
+      <el-form-item label="等价类类别">
+        <el-select v-model="form3.equivalenceClass" placeholder="请选择等价类类别">
+          <el-option label="a,b,c构成等边三角形" value="a,b,c构成等边三角形"></el-option>
+          <el-option label="a,b,c构成非等边等腰三角形" value="a,b,c构成非等边等腰三角形"></el-option>
+          <el-option label="a,b,c构成一般三角形" value="a,b,c构成一般三角形"></el-option>
+          <el-option label="a,b,c不构成三角形" value="a,b,c不构成三角形"></el-option>
+          <el-option label="a,b,c中存在非法值" value="a,b,c中存在非法值"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="边长a">
+        <el-input v-model="form3.a" placeholder="请输入边长a"></el-input>
+      </el-form-item>
+      <el-form-item label="边长b">
+        <el-input v-model="form3.b" placeholder="请输入边长b"></el-input>
+      </el-form-item>
+      <el-form-item label="边长c">
+        <el-input v-model="form3.c" placeholder="请输入边长c"></el-input>
+      </el-form-item>
+      <el-form-item label="预期结果">
+        <el-select v-model="form3.expect" placeholder="请选择预期结果">
+          <el-option label="非三角形" value="非三角形"></el-option>
+          <el-option label="等边三角形" value="等边三角形"></el-option>
+          <el-option label="等腰三角形" value="等腰三角形"></el-option>
+          <el-option label="普通三角形" value="普通三角形"></el-option>
+          <el-option label="a取值不能为0或负数" value="a取值不能为0或负数"></el-option>
+          <el-option label="b取值不能为0或负数" value="b取值不能为0或负数"></el-option>
+          <el-option label="c取值不能为0或负数" value="c取值不能为0或负数"></el-option>
+          <el-option label="a取值超出范围" value="a取值超出范围"></el-option>
+          <el-option label="b取值超出范围" value="b取值超出范围"></el-option>
+          <el-option label="c取值超出范围" value="c取值超出范围"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm3">添加测试用例</el-button>
+          <el-upload
+        class="upload-demo"
+        action="#"
+        :http-request="handleCsvUpload3"
+        :on-preview="handlePreview3"
+        :on-remove="handleRemove3"
+        :before-remove="beforeRemove3"
+        multiple
+        :limit="100"
+        :on-exceed="handleExceed3"
+        :on-success="Success3"
+        :file-list="fileList3"
+        accept=".xlsx,.xls,.csv">
+        <el-button type="success">上传测试用例</el-button>
+        <span v-if="fileList3.length > 0" style="margin-left: 10px; color: #67C23A;">
+          已上传: {{ fileList3[0].name }}
+        </span>
+      </el-upload>
+      </el-form-item>
+    </el-form>
+  </div>
+  <div>
+    <el-button type="primary" @click="testAll3" style="margin-left: 10px">测试所有用例</el-button>
+    <el-button type="danger" @click="clearAll3" style="margin-left: 10px">清空测试用例</el-button>
+    <div v-if="tableData3.length > 0" style="margin-top: 10px">
+      <el-alert
+        :title="`测试通过率: ${successRate3}%`"
+        :type="successRate3 === 100 ? 'success' : successRate3 >= 80 ? 'warning' : 'error'"
+        :closable="false"
+        show-icon>
+      </el-alert>
+    </div>
+  </div>
+  <template>
+    <el-table
+      stripe
+      :data="tableData3"
+      style="width: 100%">
+      <el-table-column
+        prop="id"
+        label="用例编号"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="equivalenceClass"
+        label="等价类类别"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="a"
+        label="a"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="b"
+        label="b"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="c"
+        label="c"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="expect"
+        label="预期结果"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="real"
+        label="实际结果"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="result"
+        label="是否通过"
+        width="180">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.result === '通过'" type="success">通过</el-tag>
+          <el-tag v-else-if="scope.row.result === '失败'" type="danger">失败</el-tag>
+        </template>
+      </el-table-column>
+    </el-table>
+  </template>
   </div>
 </template>
 
@@ -265,10 +396,13 @@ export default {
     return {
       tableData: [],
       tableData2: [],
+      tableData3: [],
       fileList: [],
       fileList2: [],
+      fileList3: [],
       successRate: 0,
       successRate2: 0,
+      successRate3: 0,
       form: {
         a: '',
         b: '',
@@ -278,6 +412,13 @@ export default {
       },
       form2: {
         property: '',
+        a: '',
+        b: '',
+        c: '',
+        expect: '',
+        equivalenceClass: ''
+      },
+      form3: {
         a: '',
         b: '',
         c: '',
@@ -357,12 +498,11 @@ export default {
           const text = e.target.result
           const lines = text.split('\n')
           const newCases = lines
-            .filter(line => line.trim())
+            .filter(line => line.trim() && line.split(',').length === 5) // 确保行不为空且有5个字段
             .map((line, index) => {
-              const [equivalenceClass, property, a, b, c, expect] = line.split(',').map(item => item.trim())
+              const [property, a, b, c, expect] = line.split(',').map(item => item.trim())
               return {
                 id: this.tableData2.length + index + 1,
-                equivalenceClass,
                 property,
                 a,
                 b,
@@ -425,10 +565,10 @@ export default {
       try {
         const response = await axios.post('http://localhost:5000/testAllTriangle', {
           testCases: this.tableData.map(item => ({
-            a: item.a,
-            b: item.b,
-            c: item.c,
-            expect: item.expect
+            a: String(item.a),
+            b: String(item.b),
+            c: String(item.c),
+            expect: String(item.expect)
           }))
         })
         this.tableData = this.tableData.map((item, index) => ({
@@ -441,7 +581,11 @@ export default {
         this.successRate = Math.round((passedCount / this.tableData.length) * 100)
         this.$message.success('所有测试用例执行完成')
       } catch (error) {
-        this.$message.error('测试执行失败')
+        console.error('测试执行失败:', error)
+        const errorMessage = error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message
+        this.$message.error('测试执行失败: ' + errorMessage)
       }
     },
     async testAll2 () {
@@ -488,6 +632,110 @@ export default {
       }).then(() => {
         this.tableData2 = []
         this.fileList2 = []
+        this.$message.success('已清空所有测试用例')
+      }).catch(() => {
+        this.$message.info('已取消清空操作')
+      })
+    },
+    handleRemove3 (file, fileList) {
+      console.log(file, fileList)
+      this.tableData3 = []
+      this.fileList3 = []
+    },
+    handlePreview3 (file) {
+      console.log(file)
+    },
+    handleExceed3 (files, fileList) {
+      this.$message.warning(`当前限制选择 100 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove3 (file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleCsvUpload3 (options) {
+      const file = options.file
+      if (file.name.endsWith('.csv')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const text = e.target.result
+          const lines = text.split('\n')
+          const newCases = lines
+            .filter(line => line.trim())
+            .map((line, index) => {
+              const [equivalenceClass, a, b, c, expect] = line.split(',').map(item => item.trim())
+              return {
+                id: this.tableData3.length + index + 1,
+                equivalenceClass,
+                a,
+                b,
+                c,
+                expect,
+                real: '',
+                result: ''
+              }
+            })
+          this.tableData3 = [...this.tableData3, ...newCases]
+          this.$message.success(`成功导入${newCases.length}个测试用例`)
+        }
+        reader.readAsText(file)
+      } else {
+        axios.post('http://localhost:5000/triangleType', file).then(response => {
+          this.tableData3 = response.data
+        })
+      }
+    },
+    submitForm3 () {
+      if (!this.form3.a || !this.form3.b || !this.form3.c || !this.form3.expect) {
+        this.$message.error('请填写完整的测试用例信息')
+        return
+      }
+      const newCase = {
+        id: this.tableData3.length + 1,
+        a: this.form3.a,
+        b: this.form3.b,
+        c: this.form3.c,
+        expect: this.form3.expect,
+        real: '',
+        result: '',
+        equivalenceClass: this.form3.equivalenceClass
+      }
+      this.tableData3.push(newCase)
+      this.form3 = { a: '', b: '', c: '', expect: '', equivalenceClass: '' }
+      this.$message.success('测试用例添加成功')
+    },
+    async testAll3 () {
+      try {
+        const response = await axios.post('http://localhost:5000/testAllTriangle', {
+          testCases: this.tableData3.map(item => ({
+            a: String(item.a),
+            b: String(item.b),
+            c: String(item.c),
+            expect: String(item.expect)
+          }))
+        })
+        this.tableData3 = this.tableData3.map((item, index) => ({
+          ...item,
+          real: response.data[index].real,
+          result: response.data[index].result
+        }))
+        const passedCount = this.tableData3.filter(item => item.result === '通过').length
+        this.successRate3 = Math.round((passedCount / this.tableData3.length) * 100)
+        this.$message.success('所有测试用例执行完成')
+      } catch (error) {
+        console.error('测试执行失败:', error)
+        const errorMessage = error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message
+        this.$message.error('测试执行失败: ' + errorMessage)
+      }
+    },
+    clearAll3 () {
+      this.$confirm('确定要清空所有测试用例吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData3 = []
+        this.fileList3 = []
         this.$message.success('已清空所有测试用例')
       }).catch(() => {
         this.$message.info('已取消清空操作')
